@@ -7,67 +7,61 @@ interface ChapterItem {
   title: string;
   path: string;
   description: string;
-  badge: string;
 }
 
 const CHAPTERS: ChapterItem[] = [
   {
     id: 'ch1',
     number: '01',
-    title: 'Partículas y Cargas',
+    title: 'Partículas y Carga Eléctrica',
     path: '/chapter/1-charges',
-    description: 'Naturaleza de la carga eléctrica q [C] en 2D',
-    badge: '2D Básico',
+    description: 'Naturaleza discreta de la carga q en dos dimensiones.',
   },
   {
     id: 'ch2',
     number: '02',
     title: 'Ley de Coulomb',
     path: '/chapter/2-coulomb',
-    description: 'Fuerza electrostática F = k·q₁·q₂/r²·r̂ en tiempo real',
-    badge: '2D Dinámico',
+    description: 'Fuerza electrostática y tercera ley de Newton.',
   },
   {
     id: 'ch3',
     number: '03',
-    title: 'Interacción en 3D',
+    title: 'Interacción Tridimensional',
     path: '/chapter/3-forces-3d',
-    description: 'Espacio tridimensional con Three.js y vectores r = (x,y,z)',
-    badge: '3D WebGL',
+    description: 'Espacio vectorial tridimensional y órbita WebGL.',
   },
   {
     id: 'ch4',
     number: '04',
-    title: 'Campo Eléctrico E',
+    title: 'Campo Eléctrico Vectorial',
     path: '/chapter/4-electric-field',
-    description: 'Definición de campo vectorial E = F/q₀ y superposición',
-    badge: 'Vectorial',
+    description: 'Perturbación local y principio de superposición.',
   },
 ];
 
 export const Sidebar: React.FC = () => {
   return (
-    <aside className="glass-panel" style={{
-      width: '280px',
-      margin: '0 0 16px 16px',
-      padding: '20px 16px',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '12px',
-      flexShrink: 0,
-      height: 'calc(100vh - 100px)',
-      overflowY: 'auto'
-    }}>
-      <div style={{ paddingBottom: '12px', borderBottom: '1px solid var(--border-glass)' }}>
-        <h2 style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-secondary)' }}>
-          Ruta de Aprendizaje
+    <aside
+      style={{
+        width: '260px',
+        padding: '24px 16px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+        flexShrink: 0,
+        height: 'calc(100vh - 65px)',
+        borderRight: '1px solid var(--border-subtle)',
+        overflowY: 'auto',
+      }}
+    >
+      <div style={{ paddingBottom: '12px', borderBottom: '1px solid var(--border-subtle)' }}>
+        <h2 style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>
+          Programa
         </h2>
-        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-          De conceptos elementales a campos complejos
-        </p>
       </div>
 
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {CHAPTERS.map((chap) => (
           <NavLink
             key={chap.id}
@@ -76,26 +70,21 @@ export const Sidebar: React.FC = () => {
               display: 'flex',
               flexDirection: 'column',
               padding: '12px 14px',
-              borderRadius: '10px',
+              borderRadius: '6px',
               textDecoration: 'none',
               color: 'inherit',
               background: isActive ? 'var(--bg-surface-elevated)' : 'transparent',
-              border: isActive ? '1px solid var(--border-accent)' : '1px solid transparent',
-              transition: 'all var(--transition-fast)'
+              borderLeft: isActive ? '2px solid var(--accent-cyan)' : '2px solid transparent',
+              transition: 'background 120ms ease',
             })}
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--accent-primary)', fontFamily: 'var(--font-mono)' }}>
-                CAPÍTULO {chap.number}
-              </span>
-              <span className="badge" style={{ fontSize: '0.65rem', padding: '2px 6px', background: 'rgba(255,255,255,0.06)' }}>
-                {chap.badge}
-              </span>
-            </div>
-            <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+              Capítulo {chap.number}
+            </span>
+            <span style={{ fontSize: '0.86rem', fontWeight: 500, color: 'var(--text-primary)', marginTop: '2px' }}>
               {chap.title}
             </span>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+            <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', marginTop: '4px', lineHeight: 1.4 }}>
               {chap.description}
             </span>
           </NavLink>

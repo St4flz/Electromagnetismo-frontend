@@ -1,47 +1,77 @@
 /* ==========================================================================
-   SISTEMA DE DISEÑO ELECTROMAGNETISMO
-   Estética científica oscura, glassmorphism y microinteracciones de alta precisión.
+   LABORATORIO DE ELECTROMAGNETISMO COMPUTACIONAL
+   Dirección de diseño: Observatorio de Física de Precisión
+   Soporte para Tema Oscuro y Tema Claro.
+   Convención cromática: Positivas AZULES, Negativas ROJAS.
    ========================================================================== */
 
 :root {
-  /* Paleta Base */
-  --bg-space: #070a11;
-  --bg-surface: #0f172a;
-  --bg-surface-elevated: #1e293b;
-  --bg-glass: rgba(15, 23, 42, 0.75);
-  --border-glass: rgba(255, 255, 255, 0.08);
-  --border-accent: rgba(99, 102, 241, 0.3);
+  /* Lienzo y atmósferas - Dark Theme (Default) */
+  --bg-deep: #030712;
+  --bg-surface: #0b1120;
+  --bg-surface-elevated: #111a2e;
+  --bg-surface-highlight: #17233d;
+  
+  /* Sistema de bordes */
+  --border-subtle: rgba(148, 163, 184, 0.1);
+  --border-medium: rgba(148, 163, 184, 0.18);
+  --border-active: rgba(56, 189, 248, 0.4);
 
-  /* Texto */
-  --text-primary: #f8fafc;
+  /* Tipografía */
+  --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
 
-  /* Cargas y Física */
-  --charge-positive: #ef4444;
-  --charge-positive-glow: rgba(239, 68, 68, 0.35);
-  --charge-negative: #3b82f6;
-  --charge-negative-glow: rgba(59, 130, 246, 0.35);
+  /* Cargas y Fenomenología: Positivas AZULES, Negativas ROJAS */
+  --charge-pos: #0ea5e9;
+  --charge-pos-soft: rgba(14, 165, 233, 0.12);
+  --charge-pos-border: rgba(14, 165, 233, 0.35);
 
-  --force-repulsion: #f59e0b;
-  --force-attraction: #a855f7;
-  --field-highlight: #38bdf8;
+  --charge-neg: #f43f5e;
+  --charge-neg-soft: rgba(244, 63, 94, 0.12);
+  --charge-neg-border: rgba(244, 63, 94, 0.35);
 
-  /* UI Accent */
-  --accent-primary: #6366f1;
-  --accent-hover: #4f46e5;
-  --accent-glow: rgba(99, 102, 241, 0.25);
-  --success: #10b981;
-  --warning: #f59e0b;
-  --error: #f43f5e;
+  /* Acentos de estado y vectores */
+  --accent-cyan: #06b6d4;
+  --accent-gold: #f59e0b;
+  --accent-purple: #c084fc;
+  --accent-emerald: #10b981;
 
   /* Tipografías */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', -apple-system, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* Transiciones */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 140ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="light"] {
+  /* Lienzo y atmósferas - Light Theme */
+  --bg-deep: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f1f5f9;
+  --bg-surface-highlight: #e2e8f0;
+  
+  /* Sistema de bordes */
+  --border-subtle: rgba(100, 116, 139, 0.15);
+  --border-medium: rgba(100, 116, 139, 0.28);
+  --border-active: rgba(2, 132, 199, 0.6);
+
+  /* Tipografía */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+
+  /* Cargas: Positivas AZULES, Negativas ROJAS */
+  --charge-pos: #0284c7;
+  --charge-pos-soft: rgba(2, 132, 199, 0.12);
+  --charge-pos-border: rgba(2, 132, 199, 0.4);
+
+  --charge-neg: #e11d48;
+  --charge-neg-soft: rgba(225, 29, 72, 0.12);
+  --charge-neg-border: rgba(225, 29, 72, 0.4);
 }
 
 *, *::before, *::after {
@@ -53,12 +83,13 @@
 html, body {
   width: 100%;
   height: 100%;
-  background-color: var(--bg-space);
+  background-color: var(--bg-deep);
   color: var(--text-primary);
-  font-family: var(--font-sans);
-  line-height: 1.5;
+  font-family: var(--font-body);
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  transition: background-color var(--transition-smooth), color var(--transition-smooth);
 }
 
 #root {
@@ -67,140 +98,198 @@ html, body {
   flex-direction: column;
 }
 
-/* Tipografía Mono para datos físicos */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
 .font-mono {
   font-family: var(--font-mono);
 }
 
-/* Efectos Glassmorphism */
-.glass-panel {
-  background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-glass);
+/* Paneles de Instrumentación */
+.lab-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
+  position: relative;
+  transition: background var(--transition-smooth), border-color var(--transition-smooth);
 }
 
-.glass-panel-elevated {
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+.lab-card-elevated {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-medium);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transition: background var(--transition-smooth), border-color var(--transition-smooth);
 }
 
-/* Botones interactivos */
+/* Bloque Colapsable de Supuestos del Modelo */
+.assumptions-banner {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+
+.assumptions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 0.8rem;
+}
+
+.assumption-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: var(--bg-surface-elevated);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border-left: 2px solid var(--accent-cyan);
+}
+
+.assumption-item span.term {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.assumption-item span.val {
+  color: var(--text-primary);
+  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+/* Botones de acción */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-weight: 500;
-  font-size: 0.875rem;
-  padding: 8px 16px;
+  font-size: 0.85rem;
+  padding: 8px 14px;
   border-radius: 8px;
   border: 1px solid transparent;
   cursor: pointer;
   transition: all var(--transition-fast);
   text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .btn-primary {
-  background: var(--accent-primary);
+  background: #0284c7;
   color: #ffffff;
-  box-shadow: 0 2px 10px var(--accent-glow);
+  border: 1px solid #38bdf8;
 }
 
-.btn-primary:hover {
-  background: var(--accent-hover);
-  transform: translateY(-1px);
+.btn-primary:hover:not(:disabled) {
+  background: #0369a1;
+  border-color: #7dd3fc;
 }
 
 .btn-secondary {
   background: var(--bg-surface-elevated);
   color: var(--text-primary);
-  border-color: var(--border-glass);
+  border-color: var(--border-medium);
 }
 
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
+.btn-secondary:hover:not(:disabled) {
+  background: var(--bg-surface-highlight);
+  border-color: var(--border-active);
 }
 
 .btn-danger {
-  background: rgba(244, 63, 94, 0.15);
-  color: #fda4af;
+  background: rgba(244, 63, 94, 0.12);
+  color: #e11d48;
   border-color: rgba(244, 63, 94, 0.3);
 }
 
-.btn-danger:hover {
-  background: rgba(244, 63, 94, 0.25);
+[data-theme="dark"] .btn-danger {
+  color: #fda4af;
 }
 
-/* Badges / Indicadores */
+.btn-danger:hover:not(:disabled) {
+  background: rgba(244, 63, 94, 0.22);
+  border-color: rgba(244, 63, 94, 0.45);
+}
+
+/* Etiquetas y Pill Badges */
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
 }
 
 .badge-pos {
-  background: rgba(239, 68, 68, 0.15);
-  color: #fca5a5;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: var(--charge-pos-soft);
+  color: var(--charge-pos);
+  border: 1px solid var(--charge-pos-border);
 }
 
 .badge-neg {
-  background: rgba(59, 130, 246, 0.15);
-  color: #93c5fd;
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: var(--charge-neg-soft);
+  color: var(--charge-neg);
+  border: 1px solid var(--charge-neg-border);
 }
 
 .badge-live {
-  background: rgba(16, 185, 129, 0.15);
-  color: #6ee7b7;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
-/* Sliders personalizados */
+/* Sliders precisos */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 6px;
-  background: var(--bg-surface-elevated);
-  border-radius: 4px;
+  height: 4px;
+  background: var(--border-medium);
+  border-radius: 2px;
   outline: none;
 }
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--accent-primary);
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: #0ea5e9;
   cursor: pointer;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 8px var(--accent-glow);
+  border: 1px solid #ffffff;
   transition: transform var(--transition-fast);
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
+  transform: scale(1.15);
 }
 
-/* Scrollbars elegantes */
+/* Scrollbars minimalistas */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -208,10 +297,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(148, 163, 184, 0.35);
 }

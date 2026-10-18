@@ -98,9 +98,9 @@ export const SimulationCanvas2D: React.FC<SimulationCanvas2DProps> = ({
         ctx.stroke();
       }
 
-      // Ejes X e Y principales
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-      ctx.lineWidth = 1.5;
+      // Ejes X e Y principales con alta transparencia y sutileza
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 1;
 
       // Eje X
       ctx.beginPath();
@@ -113,15 +113,6 @@ export const SimulationCanvas2D: React.FC<SimulationCanvas2DProps> = ({
       ctx.moveTo(cx, 0);
       ctx.lineTo(cx, transform.height);
       ctx.stroke();
-
-      // Etiquetas de escala
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-      ctx.font = '10px "JetBrains Mono", monospace';
-      ctx.fillText('+10 cm', cx + 0.1 * transform.pixelsPerMeter - 15, cy + 16);
-      ctx.fillText('-10 cm', cx - 0.1 * transform.pixelsPerMeter - 15, cy + 16);
-      ctx.fillText('+10 cm', cx + 6, cy - 0.1 * transform.pixelsPerMeter + 4);
-      ctx.fillText('-10 cm', cx + 6, cy + 0.1 * transform.pixelsPerMeter + 4);
-      ctx.fillText('(0, 0)', cx + 4, cy - 6);
     }
 
     // 2. LÍNEA DE DISTANCIA ENTRE PARTÍCULAS
@@ -232,14 +223,14 @@ export const SimulationCanvas2D: React.FC<SimulationCanvas2DProps> = ({
 
       // Glow exterior
       const glowGrad = ctx.createRadialGradient(px, py, radius * 0.4, px, py, radius * 2);
-      glowGrad.addColorStop(0, isPos ? 'rgba(239, 68, 68, 0.4)' : 'rgba(59, 130, 246, 0.4)');
+      glowGrad.addColorStop(0, isPos ? 'rgba(14, 165, 233, 0.4)' : 'rgba(244, 63, 94, 0.4)');
       glowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.beginPath();
       ctx.arc(px, py, radius * 2, 0, Math.PI * 2);
       ctx.fillStyle = glowGrad;
       ctx.fill();
 
-      // Esfera con gradiente 3D
+      // Esfera con gradiente 3D (Positivas AZULES, Negativas ROJAS)
       const grad = ctx.createRadialGradient(
         px - radius * 0.3,
         py - radius * 0.3,
@@ -249,13 +240,13 @@ export const SimulationCanvas2D: React.FC<SimulationCanvas2DProps> = ({
         radius
       );
       if (isPos) {
-        grad.addColorStop(0, '#fca5a5');
-        grad.addColorStop(0.5, '#ef4444');
-        grad.addColorStop(1, '#991b1b');
+        grad.addColorStop(0, '#7dd3fc');
+        grad.addColorStop(0.5, '#0284c7');
+        grad.addColorStop(1, '#075985');
       } else {
-        grad.addColorStop(0, '#93c5fd');
-        grad.addColorStop(0.5, '#3b82f6');
-        grad.addColorStop(1, '#1e3a8a');
+        grad.addColorStop(0, '#fda4af');
+        grad.addColorStop(0.5, '#e11d48');
+        grad.addColorStop(1, '#9f1239');
       }
 
       ctx.beginPath();
@@ -268,15 +259,15 @@ export const SimulationCanvas2D: React.FC<SimulationCanvas2DProps> = ({
 
       // Signo (+ o −)
       ctx.fillStyle = '#ffffff';
-      ctx.font = `bold ${radius > 24 ? 18 : 14}px "Inter", sans-serif`;
+      ctx.font = `bold ${radius > 24 ? 18 : 14}px "Plus Jakarta Sans", sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(isPos ? '+' : '−', px, py);
 
-      // Label de la partícula (ej: q₁)
-      ctx.font = 'bold 12px "JetBrains Mono", monospace';
-      ctx.fillStyle = isPos ? '#fca5a5' : '#93c5fd';
-      ctx.fillText(p.label, px, py + radius + 14);
+      // Label de la partícula (ej: q1)
+      ctx.font = '500 12px "JetBrains Mono", monospace';
+      ctx.fillStyle = isPos ? '#7dd3fc' : '#fda4af';
+      ctx.fillText(p.label, px, py + radius + 22);
     });
   }, [particles, forces, selectedParticleId, transform, showGrid, showForces, showDistance]);
 
