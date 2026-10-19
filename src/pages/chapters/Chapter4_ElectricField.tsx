@@ -1,13 +1,87 @@
-import React, { useEffect, useRef, useState } from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Text } from '@react-three/drei';
+import * as THREE from 'three';
+
 import { ChapterLayout } from '../../components/layout/ChapterLayout';
 import { ParticleInspector } from '../../components/controls/ParticleInspector';
 import { ChapterAssumptions } from '../../components/educational/ChapterAssumptions';
 import { EquationDisplay } from '../../components/educational/EquationDisplay';
 import { useParticles } from '../../hooks/useParticles';
 import { usePhysicsSocket } from '../../hooks/usePhysicsSocket';
-import { FieldPoint, Vector2D } from '../../types/physics';
+import { FieldPoint, Particle, Vector2D } from '../../types/physics';
 import { physicsToCanvas, canvasToPhysics, ViewportTransform } from '../../utils/coordinates';
-import { formatElectricField } from '../../utils/units';
+import { formatElectricField, formatCharge } from '../../utils/units';
+
+// Componente para renderizar vectores de campo E en 3D
+const FieldArrowMesh3D: React.FC<{ point: FieldPoint }> = ({ point }) => {
+  const p = point.point as any;
+  const eVec = point.E as any;
+  const mag = point.magnitude;
+  if (mag < 1e-4) return null;
+
+  const origin = new THREE.Vector3(p.x, p.y, p.z || 0);
+  const norm = Math.hypot(eVec.x, eVec.y, eVec.z || 0) || 1;
+  const dir = new THREE.Vector3(eVec.x / norm, eVec.y / norm, (eVec.z || 0) / norm);
+
+  // Escala logarÃ­tmica para visualizaciÃ³n equilibrada
+  const length = Math.min(Math.max(Math.log10(mag + 1) * 0.007, 0.012), 0.045);
+  const intensity = Math.min(Math.max(Math.log10(mag + 1) / 7, 0.2), 0.95);
+  const color = new THREE.Color().setHSL(0.58 - intensity * 0.45, 0.95, 0.55);
+
+  return (
+    <group position={[origin.x, origin.y, origin.z]}>
+      <arrowHelper args={[dir, new THREE.Vector3(0, 0, 0), length, color.getHex(), 0.007, 0.005]} />
+    </group>
+  );
+};
+
+// Componente para renderizar partÃ­culas en 3D
+const ParticleMeshField3D: React.FC<{
+  particle: Particle;
+  isSelected: boolean;
+  onSelect: () => void;
+}> = ({ particle, isSelected, onSelect }) => {
+  const pos = particle.position as any;
+  const isPos = particle.charge >= 0;
+  const scale = 0.01 + Math.cbrt(Math.abs(particle.charge) * 1e6) * 0.003;
+
+  const baseLabel = particle.label ? particle.label.split(' ')[0] : 'q';
+  const chargeU = (particle.charge * 1e6).toFixed(1);
+  const signStr = isPos ? '+' : '';
+  const displayLabel = `${baseLabel} (${signStr}${chargeU} ÂµC)`;
+
+  return (
+    <group position={[pos.x, pos.y, pos.z || 0]} onClick={(e) => { e.stopPropagation(); onSelect(); }}>
+      <mesh>
+        <sphereGeometry args={[scale, 32, 32]} />
+        <meshStandardMaterial
+          color={isPos ? '#0284c7' : '#e11d48'}
+          emissive={isPos ? '#075985' : '#881337'}
+          roughness={0.25}
+          metalness={0.3}
+        />
+      </mesh>
+
+      {isSelected && (
+        <mesh>
+          <sphereGeometry args={[scale * 1.3, 16, 16]} />
+          <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.4} />
+        </mesh>
+      )}
+
+      <Text
+        position={[0, scale + 0.018, 0]}
+        fontSize={0.014}
+        color={isPos ? '#7dd3fc' : '#fda4af'}
+        anchorX="center"
+        anchorY="bottom"
+      >
+        {displayLabel}
+      </Text>
+    </group>
+  );
+};
 
 export const Chapter4_ElectricField: React.FC = () => {
   const {
@@ -22,11 +96,12 @@ export const Chapter4_ElectricField: React.FC = () => {
     isMaxReached,
     maxParticles,
   } = useParticles([
-    { id: 'pos1', position: { x: -0.05, y: 0.0 }, charge: 3e-6, label: 'q1 (+3 µC)' },
-    { id: 'neg1', position: { x: 0.05, y: 0.0 }, charge: -3e-6, label: 'q2 (−3 µC)' },
+    { id: 'pos1', position: { x: -0.05, y: 0.0 }, charge: 3e-6, label: 'q1' },
+    { id: 'neg1', position: { x: 0.05, y: 0.0 }, charge: -3e-6, label: 'q2' },
   ], 4);
 
   const [resolution, setResolution] = useState<number>(18);
+  const [viewMode, setViewMode] = useState<'2D' | '3D'>('2D');
   const { sendPhysicsRequest, lastResponse, computeTimeMs } = usePhysicsSocket();
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -71,10 +146,11 @@ export const Chapter4_ElectricField: React.FC = () => {
     updateSize();
     window.addEventListener('resize', updateSize);
     return () => window.removeEventListener('resize', updateSize);
-  }, []);
+  }, [viewMode]);
 
-  // Render del campo vectorial en Canvas
+  // Render del campo vectorial en Canvas 2D
   useEffect(() => {
+    if (viewMode !== '2D') return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -88,7 +164,7 @@ export const Chapter4_ElectricField: React.FC = () => {
     ctx.fillStyle = '#030712';
     ctx.fillRect(0, 0, transform.width, transform.height);
 
-    // Malla de vectores E
+    // Malla de vectores E en 2D
     fieldPoints.forEach((fp) => {
       const { px, py } = physicsToCanvas(fp.point as Vector2D, transform);
       const eVec = fp.E as Vector2D;
@@ -124,12 +200,11 @@ export const Chapter4_ElectricField: React.FC = () => {
       ctx.fill();
     });
 
-    // Partículas
+    // PartÃ­culas con labels dinÃ¡micos y fondos protectores
     particles.forEach((p) => {
       const { px, py } = physicsToCanvas(p.position as Vector2D, transform);
       const isPos = p.charge >= 0;
       const isSelected = p.id === selectedParticleId;
-
       const radius = 18;
 
       if (isSelected) {
@@ -152,13 +227,27 @@ export const Chapter4_ElectricField: React.FC = () => {
       ctx.font = 'bold 14px "Plus Jakarta Sans", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(isPos ? '+' : '−', px, py);
+      ctx.fillText(isPos ? '+' : 'âˆ’', px, py);
 
-      ctx.font = '500 11px "JetBrains Mono", monospace';
+      // Label dinÃ¡mico con carga en vivo
+      const baseLabel = p.label ? p.label.split(' ')[0] : 'q';
+      const chargeU = (p.charge * 1e6).toFixed(1);
+      const signStr = isPos ? '+' : '';
+      const displayLabel = `${baseLabel} (${signStr}${chargeU} ÂµC)`;
+
+      ctx.font = '600 11px "JetBrains Mono", monospace';
+      const labelMetrics = ctx.measureText(displayLabel);
+      const labelW = labelMetrics.width;
+
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.fillRect(px - labelW / 2 - 5, py + radius + 8, labelW + 10, 18);
+
       ctx.fillStyle = isPos ? '#7dd3fc' : '#fda4af';
-      ctx.fillText(p.label, px, py + radius + 18);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(displayLabel, px, py + radius + 17);
     });
-  }, [fieldPoints, particles, selectedParticleId, transform]);
+  }, [fieldPoints, particles, selectedParticleId, transform, viewMode]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -198,23 +287,23 @@ export const Chapter4_ElectricField: React.FC = () => {
   return (
     <ChapterLayout
       chapterNumber={4}
-      chapterTitle="Campo Eléctrico Vectorial y Principio de Superposición"
+      chapterTitle="Campo ElÃ©ctrico Vectorial y Principio de SuperposiciÃ³n"
       prevPath="/chapter/3-forces-3d"
     >
-      {/* Explicación de supuestos de la simulación */}
+      {/* ExplicaciÃ³n de supuestos de la simulaciÃ³n */}
       <ChapterAssumptions
-        systemRange="Región de muestreo en plano 2D [-15 cm, +15 cm] para cálculo continuo de E"
+        systemRange="RegiÃ³n de muestreo [-15 cm, +15 cm] para cÃ¡lculo continuo de E"
         particleLimit={maxParticles}
-        minSeparation="4.0 cm (frontera física de aproximación entre cargas fuente)"
-        chargeRange="±0.5 µC a ±10.0 µC"
+        minSeparation="4.0 cm (frontera fÃ­sica de aproximaciÃ³n entre cargas fuente)"
+        chargeRange="Â±0.5 ÂµC a Â±10.0 ÂµC"
         additionalDetails={[
           {
-            label: 'Vector de campo eléctrico',
+            label: 'Vector de campo elÃ©ctrico',
             value: 'E = F / q0 [V/m] generado por fuentes puntuales',
           },
           {
-            label: 'Malla de muestreo',
-            value: `${resolution}×${resolution} puntos de evaluación simultáneos`,
+            label: 'CÃ¡mara 3D Orbital',
+            value: 'Control libre con OrbitControls en modo 3D',
           },
         ]}
       />
@@ -222,10 +311,43 @@ export const Chapter4_ElectricField: React.FC = () => {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: '16px', flex: 1, minHeight: 0 }}>
         {/* Canvas de campo vectorial */}
         <div className="lab-card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '12px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', padding: '0 4px' }}>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              Mueve las fuentes para recalcular el campo vectorial global en {computeTimeMs.toFixed(1)} ms.
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', padding: '0 4px', flexWrap: 'wrap', gap: '8px' }}>
+            {/* Toggle de Modo 2D vs 3D */}
+            <div style={{ display: 'inline-flex', background: 'var(--bg-surface-elevated, #1e293b)', padding: '2px', borderRadius: '6px', border: '1px solid var(--border-subtle, #334155)' }}>
+              <button
+                onClick={() => setViewMode('2D')}
+                className="btn"
+                style={{
+                  padding: '3px 10px',
+                  fontSize: '0.74rem',
+                  borderRadius: '4px',
+                  background: viewMode === '2D' ? '#0284c7' : 'transparent',
+                  color: '#ffffff',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: viewMode === '2D' ? 600 : 400,
+                }}
+              >
+                Vista 2D (Arrastre)
+              </button>
+              <button
+                onClick={() => setViewMode('3D')}
+                className="btn"
+                style={{
+                  padding: '3px 10px',
+                  fontSize: '0.74rem',
+                  borderRadius: '4px',
+                  background: viewMode === '3D' ? '#0284c7' : 'transparent',
+                  color: '#ffffff',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: viewMode === '3D' ? 600 : 400,
+                }}
+              >
+                Vista 3D (CÃ¡mara Libre)
+              </button>
             </div>
+
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <button
                 onClick={() => addParticle(2e-6, { x: (Math.random() - 0.5) * 0.1, y: (Math.random() - 0.5) * 0.1 })}
@@ -245,25 +367,50 @@ export const Chapter4_ElectricField: React.FC = () => {
                 onChange={(e) => setResolution(parseInt(e.target.value))}
                 style={{ width: '70px' }}
               />
-              <span className="font-mono" style={{ fontSize: '0.72rem' }}>{resolution}×{resolution}</span>
+              <span className="font-mono" style={{ fontSize: '0.72rem' }}>{resolution}Ã—{resolution}</span>
             </div>
           </div>
 
-          <div style={{ flex: 1, minHeight: '450px', position: 'relative' }}>
-            <canvas
-              ref={canvasRef}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-              style={{
-                width: '100%',
-                height: '100%',
-                display: 'block',
-                cursor: isDragging ? 'grabbing' : 'crosshair',
-                borderRadius: '8px',
-              }}
-            />
+          <div style={{ flex: 1, minHeight: '450px', position: 'relative', background: '#02050e', borderRadius: '8px', overflow: 'hidden', isolation: 'isolate' }} onWheelCapture={(e) => { if (viewMode === '3D') e.stopPropagation(); }}>
+            {viewMode === '2D' ? (
+              <canvas
+                ref={canvasRef}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'block',
+                  cursor: isDragging ? 'grabbing' : 'crosshair',
+                }}
+              />
+            ) : (
+              <Canvas camera={{ position: [0.18, 0.18, 0.28], fov: 45 }} style={{ touchAction: "none" }}>
+                <ambientLight intensity={0.7} />
+                <pointLight position={[0.2, 0.3, 0.2]} intensity={1.5} />
+                <gridHelper args={[0.4, 20, '#1e293b', '#0f172a']} />
+                <axesHelper args={[0.08]} />
+
+                <OrbitControls makeDefault enableDamping dampingFactor={0.05} />
+
+                {/* PartÃ­culas 3D con interacciÃ³n y live badges */}
+                {particles.map((p) => (
+                  <ParticleMeshField3D
+                    key={p.id}
+                    particle={p}
+                    isSelected={p.id === selectedParticleId}
+                    onSelect={() => setSelectedParticleId(p.id)}
+                  />
+                ))}
+
+                {/* Malla de flechas de campo elÃ©ctrico 3D */}
+                {fieldPoints.map((fp, idx) => (
+                  <FieldArrowMesh3D key={idx} point={fp} />
+                ))}
+              </Canvas>
+            )}
           </div>
         </div>
 
@@ -274,13 +421,13 @@ export const Chapter4_ElectricField: React.FC = () => {
               Del Concepto de Fuerza al Campo E
             </h3>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              En lugar de asumir una acción a distancia instantánea, postulamos que toda carga eléctrica altera localmente las propiedades del espacio continuo:
+              En lugar de asumir una acciÃ³n a distancia instantÃ¡nea, postulamos que toda carga elÃ©ctrica altera localmente las propiedades del espacio continuo:
             </p>
 
             <EquationDisplay math="\vec{E} = \frac{\vec{F}}{q_0} = k_e \frac{q}{r^2} \hat{r} \quad \left[\frac{\text{V}}{\text{m}}\right]" />
 
             <h4 style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--accent-cyan)', marginTop: '4px' }}>
-              Principio de Superposición Lineal
+              Principio de SuperposiciÃ³n Lineal
             </h4>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
               El campo total resultante es la suma vectorial independiente de las contribuciones individuales de cada fuente:
@@ -292,9 +439,12 @@ export const Chapter4_ElectricField: React.FC = () => {
             particle={selectedParticle}
             onUpdateCharge={updateParticleCharge}
             onRemove={removeParticle}
+            onUpdatePosition={updateParticlePosition}
           />
         </div>
       </div>
     </ChapterLayout>
   );
 };
+
+

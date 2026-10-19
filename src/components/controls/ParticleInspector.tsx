@@ -44,8 +44,8 @@ export const ParticleInspector: React.FC<ParticleInspectorProps> = ({
     if (!onUpdatePosition) return;
     const val = parseFloat(valStr);
     if (!isNaN(val)) {
-      // Limitar entre -14 cm y +14 cm
-      const clamped = Math.max(-14, Math.min(14, val));
+      // Limitar entre -45 cm y +45 cm
+      const clamped = Math.max(-45, Math.min(45, val));
       onUpdatePosition(particle.id, { ...pos, x: clamped / 100 });
     }
   };
@@ -54,8 +54,8 @@ export const ParticleInspector: React.FC<ParticleInspectorProps> = ({
     if (!onUpdatePosition) return;
     const val = parseFloat(valStr);
     if (!isNaN(val)) {
-      // Limitar entre -14 cm y +14 cm
-      const clamped = Math.max(-14, Math.min(14, val));
+      // Limitar entre -45 cm y +45 cm
+      const clamped = Math.max(-45, Math.min(45, val));
       onUpdatePosition(particle.id, { ...pos, y: clamped / 100 });
     }
   };
@@ -98,7 +98,7 @@ export const ParticleInspector: React.FC<ParticleInspectorProps> = ({
             Coordenadas cartesianas (cm)
           </span>
           <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-            Rango: &plusmn;14 cm
+            Rango: &plusmn;45 cm
           </span>
         </div>
 
@@ -111,8 +111,8 @@ export const ParticleInspector: React.FC<ParticleInspectorProps> = ({
               <input
                 type="number"
                 step="0.5"
-                min="-14"
-                max="14"
+                min="-45"
+                max="45"
                 value={posXcm}
                 onChange={(e) => handleXChange(e.target.value)}
                 style={{
@@ -136,8 +136,8 @@ export const ParticleInspector: React.FC<ParticleInspectorProps> = ({
               <input
                 type="number"
                 step="0.5"
-                min="-14"
-                max="14"
+                min="-45"
+                max="45"
                 value={posYcm}
                 onChange={(e) => handleYChange(e.target.value)}
                 style={{

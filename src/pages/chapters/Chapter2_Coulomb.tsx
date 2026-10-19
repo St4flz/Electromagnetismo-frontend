@@ -21,8 +21,8 @@ export const Chapter2_Coulomb: React.FC = () => {
     isMaxReached,
     maxParticles,
   } = useParticles([
-    { id: 'q1', position: { x: -0.04, y: 0.0 }, charge: 3e-6, label: 'q1 (+3 µC)' },
-    { id: 'q2', position: { x: 0.04, y: 0.0 }, charge: -2e-6, label: 'q2 (−2 µC)' },
+    { id: 'q1', position: { x: -0.04, y: 0.0 }, charge: 3e-6, label: 'q1' },
+    { id: 'q2', position: { x: 0.04, y: 0.0 }, charge: -2e-6, label: 'q2' },
   ], 4);
 
   const { sendPhysicsRequest, lastResponse, computeTimeMs } = usePhysicsSocket();

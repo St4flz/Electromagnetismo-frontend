@@ -138,12 +138,27 @@ export const SimulationCanvas2D: React.FC<SimulationCanvas2DProps> = ({
           ctx.stroke();
           ctx.setLineDash([]);
 
-          // Etiqueta r = ... cm en el centro
+          // Etiqueta r = ... cm en el centro con desplazamiento perpendicular y pastilla oscura
           const midX = (c1.px + c2.px) / 2;
           const midY = (c1.py + c2.py) / 2;
+          const normDist = dist || 1e-4;
+          const perpX = -dy / normDist;
+          const perpY = dx / normDist;
+          const labelDistX = midX + perpX * 18;
+          const labelDistY = midY - perpY * 18;
+
+          const rText = `r = ${formatDistance(dist)}`;
+          ctx.font = '500 11px "JetBrains Mono", monospace';
+          const rMetrics = ctx.measureText(rText);
+          const rW = rMetrics.width;
+
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+          ctx.fillRect(labelDistX - rW / 2 - 4, labelDistY - 8, rW + 8, 16);
+
           ctx.fillStyle = '#94a3b8';
-          ctx.font = '11px "JetBrains Mono", monospace';
-          ctx.fillText(`r = ${formatDistance(dist)}`, midX + 8, midY - 8);
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(rText, labelDistX, labelDistY);
         }
       }
     }
@@ -195,10 +210,19 @@ export const SimulationCanvas2D: React.FC<SimulationCanvas2DProps> = ({
         ctx.fillStyle = arrowColor;
         ctx.fill();
 
-        // Etiqueta del vector |F|
-        ctx.fillStyle = arrowColor;
+        // Etiqueta del vector |F| con pastilla protectora contra solapamiento
+        const fText = `F = ${formatForce(f.forceMagnitude)}`;
         ctx.font = 'bold 11px "JetBrains Mono", monospace';
-        ctx.fillText(`F = ${formatForce(f.forceMagnitude)}`, endX + 8, endY + 4);
+        const fMetrics = ctx.measureText(fText);
+        const fW = fMetrics.width;
+
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+        ctx.fillRect(endX + 6, endY - 8, fW + 8, 17);
+
+        ctx.fillStyle = arrowColor;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(fText, endX + 10, endY);
       });
     }
 
@@ -264,10 +288,23 @@ export const SimulationCanvas2D: React.FC<SimulationCanvas2DProps> = ({
       ctx.textBaseline = 'middle';
       ctx.fillText(isPos ? '+' : '−', px, py);
 
-      // Label de la partícula (ej: q1)
-      ctx.font = '500 12px "JetBrains Mono", monospace';
+      // Label de la partícula dinámico con su carga en vivo y fondo protector
+      const baseLabel = p.label ? p.label.split(' ')[0] : 'q';
+      const chargeU = (p.charge * 1e6).toFixed(1);
+      const signStr = p.charge >= 0 ? '+' : '';
+      const displayLabel = `${baseLabel} (${signStr}${chargeU} µC)`;
+
+      ctx.font = '600 11px "JetBrains Mono", monospace';
+      const labelMetrics = ctx.measureText(displayLabel);
+      const labelW = labelMetrics.width;
+
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.fillRect(px - labelW / 2 - 6, py + radius + 10, labelW + 12, 18);
+
       ctx.fillStyle = isPos ? '#7dd3fc' : '#fda4af';
-      ctx.fillText(p.label, px, py + radius + 22);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(displayLabel, px, py + radius + 19);
     });
   }, [particles, forces, selectedParticleId, transform, showGrid, showForces, showDistance]);
 

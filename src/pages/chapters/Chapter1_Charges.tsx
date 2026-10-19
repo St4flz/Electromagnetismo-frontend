@@ -22,8 +22,8 @@ export const Chapter1_Charges: React.FC = () => {
     isMaxReached,
     maxParticles,
   } = useParticles([
-    { id: 'p1', position: { x: -0.05, y: 0.02 }, charge: 3e-6, label: 'q1 (+3 µC)' },
-    { id: 'p2', position: { x: 0.05, y: -0.02 }, charge: -2e-6, label: 'q2 (−2 µC)' },
+    { id: 'p1', position: { x: -0.05, y: 0.02 }, charge: 3e-6, label: 'q1' },
+    { id: 'p2', position: { x: 0.05, y: -0.02 }, charge: -2e-6, label: 'q2' },
   ], 4);
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -87,11 +87,11 @@ export const Chapter1_Charges: React.FC = () => {
             const nextX2 = pos2.x - nx * speed;
             const nextY2 = pos2.y - ny * speed;
 
-            if (Math.abs(nextX1) < 0.14 && Math.abs(nextY1) < 0.14) {
+            if (Math.abs(nextX1) < 0.45 && Math.abs(nextY1) < 0.45) {
               pos1.x = nextX1;
               pos1.y = nextY1;
             }
-            if (Math.abs(nextX2) < 0.14 && Math.abs(nextY2) < 0.14) {
+            if (Math.abs(nextX2) < 0.45 && Math.abs(nextY2) < 0.45) {
               pos2.x = nextX2;
               pos2.y = nextY2;
             }
