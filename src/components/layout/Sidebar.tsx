@@ -38,6 +38,41 @@ const CHAPTERS: ChapterItem[] = [
     path: '/chapter/4-electric-field',
     description: 'Perturbación local y principio de superposición.',
   },
+  {
+    id: 'ch5',
+    number: '05',
+    title: 'Campo Eléctrico en Movimiento',
+    path: '/chapter/5-moving-charge',
+    description: 'Cinemática de cargas, Velocity-Verlet y deflexión balística de Thomson.',
+  },
+  {
+    id: 'ch6',
+    number: '06',
+    title: 'Ondas y Campo Magnético (2D)',
+    path: '/chapter/6-magnetic-field',
+    description: 'Ley de Biot-Savart, Fuerza de Lorentz, órbita de Boris y Ciclotrón.',
+  },
+  {
+    id: 'ch7',
+    number: '07',
+    title: 'Onda Electromagnética en Vacío',
+    path: '/chapter/7-em-wave-vacuum',
+    description: 'Ecuaciones de Maxwell 2D, velocidad c, equipartición y flujo de Poynting.',
+  },
+  {
+    id: 'ch8',
+    number: '08',
+    title: 'Introducción a Metamateriales',
+    path: '/chapter/8-metamaterials',
+    description: 'Estructuras periódicas (a, d, w), medios DNG y refracción negativa.',
+  },
+  {
+    id: 'ch9',
+    number: '09',
+    title: 'Introducción al Método FDTD',
+    path: '/chapter/9-fdtd-intro',
+    description: 'Celda de Yee 2D TM, estabilidad CFL, fronteras Mur ABC y espectro FFT.',
+  },
 ];
 
 export const Sidebar: React.FC = () => {

@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
@@ -9,7 +9,7 @@ import { usePhysicsSocket } from '../../hooks/usePhysicsSocket';
 import { Particle, Vector3D, CoulombForce } from '../../types/physics';
 import { formatCharge } from '../../utils/units';
 
-// Componente para una partÃ­cula 3D
+// Componente para una partícula 3D
 const ParticleMesh3D: React.FC<{
   particle: Particle;
   isSelected: boolean;
@@ -32,7 +32,7 @@ const ParticleMesh3D: React.FC<{
         />
       </mesh>
 
-      {/* Halo de selecciÃ³n ceÃ±ido */}
+      {/* Halo de selección ceñido */}
       {isSelected && (
         <mesh>
           <sphereGeometry args={[scale * 1.25, 16, 16]} />
@@ -48,7 +48,7 @@ const ParticleMesh3D: React.FC<{
         anchorX="center"
         anchorY="bottom"
       >
-        {`${particle.label.split(' ')[0]} (${particle.charge >= 0 ? '+' : ''}${(particle.charge * 1e6).toFixed(1)} ÂµC)`}
+        {`${particle.label.split(' ')[0]} (${particle.charge >= 0 ? '+' : ''}${(particle.charge * 1e6).toFixed(1)} µC)`}
       </Text>
     </group>
   );
@@ -106,24 +106,24 @@ export const Chapter3_Forces3D: React.FC = () => {
   return (
     <ChapterLayout
       chapterNumber={3}
-      chapterTitle="InteracciÃ³n ElectrostÃ¡tica en el Espacio Tridimensional"
+      chapterTitle="Interacción Electrostática en el Espacio Tridimensional"
       prevPath="/chapter/2-coulomb"
       nextPath="/chapter/4-electric-field"
     >
-      {/* ExplicaciÃ³n de supuestos de la simulaciÃ³n */}
+      {/* Explicación de supuestos de la simulación */}
       <ChapterAssumptions
         systemRange="Espacio euclidiano 3D [-10 cm, +10 cm] en ejes X, Y y Z"
         particleLimit={maxParticles}
-        minSeparation="4.0 cm (distancia mÃ­nima de separaciÃ³n tridimensional para estabilidad analÃ­tica)"
-        chargeRange="Â±0.5 ÂµC a Â±10.0 ÂµC"
+        minSeparation="4.0 cm (distancia mínima de separación tridimensional para estabilidad analítica)"
+        chargeRange="±0.5 µC a ±10.0 µC"
         additionalDetails={[
           {
             label: 'Vector tridimensional',
-            value: 'r = (x, y, z) con norma euclidiana ||r|| = âˆš(xÂ² + yÂ² + zÂ²)',
+            value: 'r = (x, y, z) con norma euclidiana ||r|| = √(x² + y² + z²)',
           },
           {
-            label: 'CÃ¡mara orbital WebGL',
-            value: 'RotaciÃ³n con botÃ³n primario, paneo con secundario y zoom con rueda',
+            label: 'Cámara orbital WebGL',
+            value: 'Rotación con botón primario, paneo con secundario y zoom con rueda',
           },
         ]}
       />
@@ -133,7 +133,7 @@ export const Chapter3_Forces3D: React.FC = () => {
         <div className="lab-card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '12px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', padding: '0 4px' }}>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              RotaciÃ³n 3D: Clic y arrastra para orbitar. Rueda para zoom. Clic sobre una esfera para seleccionarla.
+              Rotación 3D: Clic y arrastra para orbitar. Rueda para zoom. Clic sobre una esfera para seleccionarla.
             </div>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               <button
@@ -142,7 +142,7 @@ export const Chapter3_Forces3D: React.FC = () => {
                 disabled={isMaxReached}
                 style={{ padding: '4px 10px', fontSize: '0.74rem' }}
               >
-                + AÃ±adir Carga 3D
+                + Añadir Carga 3D
               </button>
               <div className="badge badge-live" style={{ fontSize: '0.7rem' }}>
                 Three.js ({computeTimeMs.toFixed(1)} ms)
@@ -159,7 +159,7 @@ export const Chapter3_Forces3D: React.FC = () => {
 
               <OrbitControls enableDamping dampingFactor={0.05} />
 
-              {/* Render de PartÃ­culas */}
+              {/* Render de Partículas */}
               {particles.map((p) => (
                 <ParticleMesh3D
                   key={p.id}
@@ -178,7 +178,7 @@ export const Chapter3_Forces3D: React.FC = () => {
           </div>
         </div>
 
-        {/* Panel lateral con Controles de PosiciÃ³n 3D */}
+        {/* Panel lateral con Controles de Posición 3D */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', overflowY: 'auto' }}>
           {selectedParticle && selectedPos ? (
             <div className="lab-card-elevated" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -247,7 +247,7 @@ export const Chapter3_Forces3D: React.FC = () => {
               <div style={{ marginTop: '6px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', marginBottom: '2px' }}>
                   <span>Magnitud de carga q</span>
-                  <span className="font-mono">{(selectedParticle.charge * 1e6).toFixed(1)} ÂµC</span>
+                  <span className="font-mono">{(selectedParticle.charge * 1e6).toFixed(1)} µC</span>
                 </div>
                 <input
                   type="range"
@@ -261,23 +261,23 @@ export const Chapter3_Forces3D: React.FC = () => {
             </div>
           ) : (
             <div className="lab-card" style={{ padding: '16px', color: 'var(--text-muted)', fontSize: '0.82rem', textAlign: 'center' }}>
-              Selecciona una partÃ­cula en el espacio 3D para calibrar sus coordenadas cartesianas (x, y, z).
+              Selecciona una partícula en el espacio 3D para calibrar sus coordenadas cartesianas (x, y, z).
             </div>
           )}
 
-          {/* ExplicaciÃ³n FÃ­sica de Vectores 3D */}
+          {/* Explicación Física de Vectores 3D */}
           <div className="lab-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <h4 style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-              GeneralizaciÃ³n al Espacio Tridimensional
+              Generalización al Espacio Tridimensional
             </h4>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              La ley de Coulomb opera de forma isÃ³tropa en el espacio euclidiano continuo:
+              La ley de Coulomb opera de forma isótropa en el espacio euclidiano continuo:
             </p>
             <div className="font-mono" style={{ background: 'rgba(3,7,18,0.5)', padding: '8px', borderRadius: '6px', fontSize: '0.75rem', color: '#38bdf8', border: '1px solid var(--border-subtle)' }}>
-              r = âˆš(Î”xÂ² + Î”yÂ² + Î”zÂ²)
+              r = √(Δx² + Δy² + Δz²)
             </div>
             <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
-              El versor unitario rÌ‚ = r / ||r|| descompone vectorialmente la interacciÃ³n sobre los tres ejes coordenados independientes.
+              El versor unitario r̂ = r / ||r|| descompone vectorialmente la interacción sobre los tres ejes coordenados independientes.
             </p>
           </div>
         </div>

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
@@ -24,7 +24,7 @@ const FieldArrowMesh3D: React.FC<{ point: FieldPoint }> = ({ point }) => {
   const norm = Math.hypot(eVec.x, eVec.y, eVec.z || 0) || 1;
   const dir = new THREE.Vector3(eVec.x / norm, eVec.y / norm, (eVec.z || 0) / norm);
 
-  // Escala logarÃ­tmica para visualizaciÃ³n equilibrada
+  // Escala logarítmica para visualización equilibrada
   const length = Math.min(Math.max(Math.log10(mag + 1) * 0.007, 0.012), 0.045);
   const intensity = Math.min(Math.max(Math.log10(mag + 1) / 7, 0.2), 0.95);
   const color = new THREE.Color().setHSL(0.58 - intensity * 0.45, 0.95, 0.55);
@@ -36,7 +36,7 @@ const FieldArrowMesh3D: React.FC<{ point: FieldPoint }> = ({ point }) => {
   );
 };
 
-// Componente para renderizar partÃ­culas en 3D
+// Componente para renderizar partículas en 3D
 const ParticleMeshField3D: React.FC<{
   particle: Particle;
   isSelected: boolean;
@@ -49,7 +49,7 @@ const ParticleMeshField3D: React.FC<{
   const baseLabel = particle.label ? particle.label.split(' ')[0] : 'q';
   const chargeU = (particle.charge * 1e6).toFixed(1);
   const signStr = isPos ? '+' : '';
-  const displayLabel = `${baseLabel} (${signStr}${chargeU} ÂµC)`;
+  const displayLabel = `${baseLabel} (${signStr}${chargeU} µC)`;
 
   return (
     <group position={[pos.x, pos.y, pos.z || 0]} onClick={(e) => { e.stopPropagation(); onSelect(); }}>
@@ -200,7 +200,7 @@ export const Chapter4_ElectricField: React.FC = () => {
       ctx.fill();
     });
 
-    // PartÃ­culas con labels dinÃ¡micos y fondos protectores
+    // Partículas con labels dinámicos y fondos protectores
     particles.forEach((p) => {
       const { px, py } = physicsToCanvas(p.position as Vector2D, transform);
       const isPos = p.charge >= 0;
@@ -227,13 +227,13 @@ export const Chapter4_ElectricField: React.FC = () => {
       ctx.font = 'bold 14px "Plus Jakarta Sans", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(isPos ? '+' : 'âˆ’', px, py);
+      ctx.fillText(isPos ? '+' : '−', px, py);
 
-      // Label dinÃ¡mico con carga en vivo
+      // Label dinámico con carga en vivo
       const baseLabel = p.label ? p.label.split(' ')[0] : 'q';
       const chargeU = (p.charge * 1e6).toFixed(1);
       const signStr = isPos ? '+' : '';
-      const displayLabel = `${baseLabel} (${signStr}${chargeU} ÂµC)`;
+      const displayLabel = `${baseLabel} (${signStr}${chargeU} µC)`;
 
       ctx.font = '600 11px "JetBrains Mono", monospace';
       const labelMetrics = ctx.measureText(displayLabel);
@@ -287,22 +287,23 @@ export const Chapter4_ElectricField: React.FC = () => {
   return (
     <ChapterLayout
       chapterNumber={4}
-      chapterTitle="Campo ElÃ©ctrico Vectorial y Principio de SuperposiciÃ³n"
+      chapterTitle="Campo Eléctrico Vectorial y Principio de Superposición"
       prevPath="/chapter/3-forces-3d"
+      nextPath="/chapter/5-moving-charge"
     >
-      {/* ExplicaciÃ³n de supuestos de la simulaciÃ³n */}
+      {/* Explicación de supuestos de la simulación */}
       <ChapterAssumptions
-        systemRange="RegiÃ³n de muestreo [-15 cm, +15 cm] para cÃ¡lculo continuo de E"
+        systemRange="Región de muestreo [-15 cm, +15 cm] para cálculo continuo de E"
         particleLimit={maxParticles}
-        minSeparation="4.0 cm (frontera fÃ­sica de aproximaciÃ³n entre cargas fuente)"
-        chargeRange="Â±0.5 ÂµC a Â±10.0 ÂµC"
+        minSeparation="4.0 cm (frontera física de aproximación entre cargas fuente)"
+        chargeRange="±0.5 µC a ±10.0 µC"
         additionalDetails={[
           {
-            label: 'Vector de campo elÃ©ctrico',
+            label: 'Vector de campo eléctrico',
             value: 'E = F / q0 [V/m] generado por fuentes puntuales',
           },
           {
-            label: 'CÃ¡mara 3D Orbital',
+            label: 'Cámara 3D Orbital',
             value: 'Control libre con OrbitControls en modo 3D',
           },
         ]}
@@ -344,7 +345,7 @@ export const Chapter4_ElectricField: React.FC = () => {
                   fontWeight: viewMode === '3D' ? 600 : 400,
                 }}
               >
-                Vista 3D (CÃ¡mara Libre)
+                Vista 3D (Cámara Libre)
               </button>
             </div>
 
@@ -367,7 +368,7 @@ export const Chapter4_ElectricField: React.FC = () => {
                 onChange={(e) => setResolution(parseInt(e.target.value))}
                 style={{ width: '70px' }}
               />
-              <span className="font-mono" style={{ fontSize: '0.72rem' }}>{resolution}Ã—{resolution}</span>
+              <span className="font-mono" style={{ fontSize: '0.72rem' }}>{resolution}×{resolution}</span>
             </div>
           </div>
 
@@ -395,7 +396,7 @@ export const Chapter4_ElectricField: React.FC = () => {
 
                 <OrbitControls makeDefault enableDamping dampingFactor={0.05} />
 
-                {/* PartÃ­culas 3D con interacciÃ³n y live badges */}
+                {/* Partículas 3D con interacción y live badges */}
                 {particles.map((p) => (
                   <ParticleMeshField3D
                     key={p.id}
@@ -405,7 +406,7 @@ export const Chapter4_ElectricField: React.FC = () => {
                   />
                 ))}
 
-                {/* Malla de flechas de campo elÃ©ctrico 3D */}
+                {/* Malla de flechas de campo eléctrico 3D */}
                 {fieldPoints.map((fp, idx) => (
                   <FieldArrowMesh3D key={idx} point={fp} />
                 ))}
@@ -421,13 +422,13 @@ export const Chapter4_ElectricField: React.FC = () => {
               Del Concepto de Fuerza al Campo E
             </h3>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              En lugar de asumir una acciÃ³n a distancia instantÃ¡nea, postulamos que toda carga elÃ©ctrica altera localmente las propiedades del espacio continuo:
+              En lugar de asumir una acción a distancia instantánea, postulamos que toda carga eléctrica altera localmente las propiedades del espacio continuo:
             </p>
 
             <EquationDisplay math="\vec{E} = \frac{\vec{F}}{q_0} = k_e \frac{q}{r^2} \hat{r} \quad \left[\frac{\text{V}}{\text{m}}\right]" />
 
             <h4 style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--accent-cyan)', marginTop: '4px' }}>
-              Principio de SuperposiciÃ³n Lineal
+              Principio de Superposición Lineal
             </h4>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
               El campo total resultante es la suma vectorial independiente de las contribuciones individuales de cada fuente:
