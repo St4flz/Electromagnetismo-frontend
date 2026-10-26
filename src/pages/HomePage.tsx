@@ -200,6 +200,19 @@ export const HomePage: React.FC = () => {
               </p>
               <div style={{ marginTop: 'auto', paddingTop: '16px', fontSize: '0.76rem', color: 'var(--accent-cyan)' }}>Explorar laboratorio paramétrico &rarr;</div>
             </Link>
+
+            {/* Ch 12 */}
+            <Link to="/chapter/12-genetic-optimizer" className="lab-card" style={{ textDecoration: 'none', color: 'inherit', padding: '20px', display: 'flex', flexDirection: 'column', border: '1px solid rgba(56, 189, 248, 0.4)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '0.72rem', color: '#38bdf8', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>12</span>
+                <span className="badge" style={{ fontSize: '0.65rem', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.3)' }}>Optimizador</span>
+              </div>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 600, marginTop: '6px', color: 'var(--text-primary)' }}>Optimizador Genético de Metamateriales</h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginTop: '8px' }}>
+                Síntesis automática de celdas unitarias con BLX-α, torneo, elitismo, caché de genomas y re-validación física en malla fina (Δx/2).
+              </p>
+              <div style={{ marginTop: 'auto', paddingTop: '16px', fontSize: '0.76rem', color: '#38bdf8' }}>Explorar optimizador automático &rarr;</div>
+            </Link>
           </div>
         </section>
       </main>

@@ -13,6 +13,7 @@ import { Chapter8_Metamaterials } from './pages/chapters/Chapter8_Metamaterials'
 import { Chapter9_FDTDIntro } from './pages/chapters/Chapter9_FDTDIntro';
 import { Chapter10_FDTDSimulator } from './pages/chapters/Chapter10_FDTDSimulator';
 import { Chapter11_ParametricLab } from './pages/chapters/Chapter11_ParametricLab';
+import { Chapter12_GeneticOptimizer } from './pages/chapters/Chapter12_GeneticOptimizer';
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/chapter/9-fdtd-intro" element={<Chapter9_FDTDIntro />} />
           <Route path="/chapter/10-fdtd-simulator" element={<Chapter10_FDTDSimulator />} />
           <Route path="/chapter/11-parametric-lab" element={<Chapter11_ParametricLab />} />
+          <Route path="/chapter/12-genetic-optimizer" element={<Chapter12_GeneticOptimizer />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

@@ -87,6 +87,13 @@ const CHAPTERS: ChapterItem[] = [
     path: '/chapter/11-parametric-lab',
     description: 'Barridos 1D/2D, mapas de calor T(f, a), selectividad F2 y tabla README.',
   },
+  {
+    id: 'ch12',
+    number: '12',
+    title: 'Optimizador Genético de Metamateriales',
+    path: '/chapter/12-genetic-optimizer',
+    description: 'Síntesis automática con BLX-α, elitismo, F2 selectiva y re-validación Δx/2.',
+  },
 ];
 
 export const Sidebar: React.FC = () => {
