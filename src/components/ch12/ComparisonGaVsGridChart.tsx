@@ -107,7 +107,12 @@ export const ComparisonGaVsGridChart: React.FC<ComparisonGaVsGridChartProps> = (
                   borderRadius: '8px',
                   fontSize: '0.8rem',
                 }}
-                formatter={(val: any) => [Number(val).toFixed(4), '']}
+                formatter={(val: any) => [
+                  val !== undefined && val !== null && !isNaN(Number(val))
+                    ? Number(val).toFixed(4)
+                    : '--',
+                  '',
+                ]}
               />
               <Legend
                 verticalAlign="top"
@@ -150,10 +155,10 @@ export const ComparisonGaVsGridChart: React.FC<ComparisonGaVsGridChartProps> = (
         }}
       >
         <span>
-          GA Mejor: <strong style={{ color: '#38bdf8' }}>{gaFinalFitness ? gaFinalFitness.toFixed(4) : '--'}</strong>
+          GA Mejor: <strong style={{ color: '#38bdf8' }}>{typeof gaFinalFitness === 'number' && !isNaN(gaFinalFitness) ? gaFinalFitness.toFixed(4) : '--'}</strong>
         </span>
         <span>
-          Grid Search Mejor: <strong style={{ color: '#a855f7' }}>{gridFinalFitness ? gridFinalFitness.toFixed(4) : '--'}</strong>
+          Grid Search Mejor: <strong style={{ color: '#a855f7' }}>{typeof gridFinalFitness === 'number' && !isNaN(gridFinalFitness) ? gridFinalFitness.toFixed(4) : '--'}</strong>
         </span>
       </div>
     </div>

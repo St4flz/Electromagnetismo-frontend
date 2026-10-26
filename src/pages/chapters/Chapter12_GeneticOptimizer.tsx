@@ -142,13 +142,15 @@ export const Chapter12_GeneticOptimizer: React.FC = () => {
           setFitnessValues(d.fitness_values);
           setBestDesign(d.best_design_point);
 
-          // Actualizar curva de comparación para GA
+          // Actualizar curva de comparación para GA de forma inmutable
           setComparisonData((prev) => {
-            const nextPt: ComparisonPoint = {
-              evals: d.total_evaluations,
-              gaFitness: d.best_fitness,
-            };
-            return [...prev, nextPt];
+            const ev = d.total_evaluations;
+            const fit = d.best_fitness;
+            const existing = prev.find((p) => p.evals === ev);
+            if (existing) {
+              return prev.map((p) => (p.evals === ev ? { ...p, gaFitness: fit } : { ...p }));
+            }
+            return [...prev.map((p) => ({ ...p })), { evals: ev, gaFitness: fit }].sort((a, b) => a.evals - b.evals);
           });
           setGaFinalFitness(d.best_fitness);
 
@@ -232,8 +234,8 @@ export const Chapter12_GeneticOptimizer: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           family: config.family,
-          max_evaluations: 40,
-          stride: 2,
+          max_evaluations: 15,
+          stride: 3,
           f0_ghz: config.f0_ghz,
           periods: config.periods,
           is_pec: config.is_pec,
@@ -241,26 +243,38 @@ export const Chapter12_GeneticOptimizer: React.FC = () => {
           dx_mm: config.dx_mm,
         }),
       });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
       const data = await res.json();
+      if (!data) return;
 
-      setGridFinalFitness(data.best_fitness);
+      if (typeof data.best_fitness === 'number' && !isNaN(data.best_fitness)) {
+        setGridFinalFitness(data.best_fitness);
+      }
 
-      // Fusionar historia de evaluaciones
-      setComparisonData((prev) => {
-        const merged: ComparisonPoint[] = [...prev];
-        data.evaluations_history.forEach((ev: number, idx: number) => {
-          const fit = data.best_fitness_history[idx];
-          const existing = merged.find((p) => p.evals === ev);
-          if (existing) {
-            existing.gridFitness = fit;
-          } else {
-            merged.push({ evals: ev, gridFitness: fit });
-          }
+      // Fusionar historia de evaluaciones de forma estrictamente inmutable
+      if (Array.isArray(data.evaluations_history) && Array.isArray(data.best_fitness_history)) {
+        setComparisonData((prev) => {
+          const map = new Map<number, ComparisonPoint>();
+          prev.forEach((p) => {
+            map.set(p.evals, { ...p });
+          });
+          data.evaluations_history.forEach((ev: number, idx: number) => {
+            const fit = data.best_fitness_history[idx];
+            const existing = map.get(ev);
+            if (existing) {
+              map.set(ev, { ...existing, gridFitness: fit });
+            } else {
+              map.set(ev, { evals: ev, gridFitness: fit });
+            }
+          });
+          return Array.from(map.values()).sort((a, b) => a.evals - b.evals);
         });
-        return merged.sort((a, b) => a.evals - b.evals);
-      });
-    } catch (err) {
+      }
+    } catch (err: any) {
       console.error('Error al ejecutar Grid Search:', err);
+      alert(`Error en Grid Search: ${err.message}`);
     } finally {
       setIsGridSearching(false);
     }

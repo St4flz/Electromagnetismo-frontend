@@ -690,28 +690,28 @@ export const Chapter6_MagneticField: React.FC = () => {
               <div style={{ marginTop: '14px', background: 'var(--bg-surface-elevated)', padding: '12px', borderRadius: '6px', fontSize: '0.76rem', border: '1px solid var(--border-subtle)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Radio teórico:</span>
-                  <span className="font-mono">{(cyclotronVerification.theoretical.radius * 100).toFixed(2)} cm</span>
+                  <span className="font-mono">{(((cyclotronVerification?.theoretical?.radius ?? cyclotronVerification?.theoretical?.cyclotron_radius ?? 0) * 100)).toFixed(2)} cm</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Radio medido Boris:</span>
-                  <span className="font-mono">{(cyclotronVerification.numerical_radius * 100).toFixed(2)} cm</span>
+                  <span className="font-mono">{(((cyclotronVerification?.numerical_radius ?? cyclotronVerification?.numerical_avg_radius ?? 0) * 100)).toFixed(2)} cm</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Error radio:</span>
                   <span className="font-mono" style={{ color: '#10b981', fontWeight: 600 }}>
-                    {cyclotronVerification.radius_error_percent.toFixed(4)}%
+                    {(cyclotronVerification?.radius_error_percent ?? 0).toFixed(4)}%
                   </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Error periodo:</span>
                   <span className="font-mono" style={{ color: '#10b981', fontWeight: 600 }}>
-                    {cyclotronVerification.period_error_percent.toFixed(4)}%
+                    {(cyclotronVerification?.period_error_percent ?? 0).toFixed(4)}%
                   </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Variación ΔK (Trabajo):</span>
                   <span className="font-mono" style={{ color: '#10b981', fontWeight: 600 }}>
-                    {cyclotronVerification.kinetic_energy_drift_J.toExponential(3)} J (Exacto)
+                    {(cyclotronVerification?.kinetic_energy_drift_J ?? 0).toExponential(3)} J (Exacto)
                   </span>
                 </div>
                 <div style={{ padding: '6px 10px', borderRadius: '4px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', textAlign: 'center', fontWeight: 600, fontSize: '0.72rem' }}>
@@ -724,24 +724,24 @@ export const Chapter6_MagneticField: React.FC = () => {
               <div style={{ marginTop: '14px', background: 'var(--bg-surface-elevated)', padding: '12px', borderRadius: '6px', fontSize: '0.76rem', border: '1px solid var(--border-subtle)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Velocidad calculada:</span>
-                  <span className="font-mono">{wienVerification.measured_speed.toFixed(1)} m/s</span>
+                  <span className="font-mono">{(wienVerification?.measured_speed ?? wienVerification?.actual_speed ?? 0).toFixed(1)} m/s</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Velocidad teórica Wien:</span>
-                  <span className="font-mono">{wienVerification.theoretical_wien_speed.toFixed(1)} m/s</span>
+                  <span className="font-mono">{(wienVerification?.theoretical_wien_speed ?? wienVerification?.wien_speed ?? 0).toFixed(1)} m/s</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Deflexión residual y(L):</span>
-                  <span className="font-mono">{(wienVerification.deflection_at_exit * 1000).toFixed(3)} mm</span>
+                  <span className="font-mono">{(((wienVerification?.deflection_at_exit ?? wienVerification?.exit_y_deflection_m ?? 0) * 1000)).toFixed(3)} mm</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Estado:</span>
-                  <span className="font-mono" style={{ color: wienVerification.is_balanced ? '#10b981' : '#f59e0b', fontWeight: 600 }}>
-                    {wienVerification.is_balanced ? 'Rayo Indeflectado' : 'Rayo Desviado'}
+                  <span className="font-mono" style={{ color: wienVerification?.is_balanced ? '#10b981' : '#f59e0b', fontWeight: 600 }}>
+                    {wienVerification?.is_balanced ? 'Rayo Indeflectado' : 'Rayo Desviado'}
                   </span>
                 </div>
-                <div style={{ padding: '6px 10px', borderRadius: '4px', background: wienVerification.is_verified ? 'rgba(16, 185, 129, 0.15)' : 'rgba(244, 63, 94, 0.15)', color: wienVerification.is_verified ? '#10b981' : '#f43f5e', textAlign: 'center', fontWeight: 600, fontSize: '0.72rem' }}>
-                  {wienVerification.is_verified ? '✓ CONDICIÓN DE WIEN VERIFICADA' : '✗ FUERA DE BALANCE'}
+                <div style={{ padding: '6px 10px', borderRadius: '4px', background: wienVerification?.is_verified ? 'rgba(16, 185, 129, 0.15)' : 'rgba(244, 63, 94, 0.15)', color: wienVerification?.is_verified ? '#10b981' : '#f43f5e', textAlign: 'center', fontWeight: 600, fontSize: '0.72rem' }}>
+                  {wienVerification?.is_verified ? '✓ CONDICIÓN DE WIEN VERIFICADA' : '✗ FUERA DE BALANCE'}
                 </div>
               </div>
             )}
