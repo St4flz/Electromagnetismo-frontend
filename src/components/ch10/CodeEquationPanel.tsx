@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getApiUrl } from '../../utils/apiConfig';
 
 interface EquationMapping {
   id: string;
@@ -78,8 +79,12 @@ export const CodeEquationPanel: React.FC = () => {
     setActiveItem(item);
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/source/${item.symbol}`);
+      const res = await fetch(getApiUrl(`/api/source/${item.symbol}`));
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const contentType = res.headers.get('content-type');
+      if (contentType && !contentType.includes('application/json')) {
+        throw new Error('Respuesta del servidor no es JSON (verifique proxy backend)');
+      }
       const data = await res.json();
       setSourceCode(data.source);
       setSourceMeta(data);

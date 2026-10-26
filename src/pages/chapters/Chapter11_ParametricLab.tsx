@@ -6,6 +6,7 @@ import { FamilyCurvesChart } from '../../components/ch11/FamilyCurvesChart';
 import { HeatmapChart } from '../../components/ch11/HeatmapChart';
 import { ReadmeTable, SweepPointData } from '../../components/ch11/ReadmeTable';
 import { ObjectiveComparisonCard } from '../../components/ch11/ObjectiveComparisonCard';
+import { getApiUrl } from '../../utils/apiConfig';
 
 export const Chapter11_ParametricLab: React.FC = () => {
   const [config, setConfig] = useState<SweepConfig>({
@@ -56,7 +57,7 @@ export const Chapter11_ParametricLab: React.FC = () => {
         values = [8.0, 9.0, 10.0, 11.0, 12.0];
       }
 
-      const res = await fetch('/api/sweep/1d', {
+      const res = await fetch(getApiUrl('/api/sweep/1d'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -96,7 +97,7 @@ export const Chapter11_ParametricLab: React.FC = () => {
       const xVals = [8.0, 9.0, 10.0, 11.0, 12.0];
       const yVals = [3.0, 4.0, 5.0, 6.0, 7.0];
 
-      const res = await fetch('/api/sweep/2d', {
+      const res = await fetch(getApiUrl('/api/sweep/2d'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -136,7 +137,7 @@ export const Chapter11_ParametricLab: React.FC = () => {
   // 3. Exportar CSV
   const handleExportCsv = async () => {
     try {
-      const res = await fetch('/api/sweep/export/csv', {
+      const res = await fetch(getApiUrl('/api/sweep/export/csv'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -172,7 +173,7 @@ export const Chapter11_ParametricLab: React.FC = () => {
   const handleRunRobustness = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/sweep/robustness');
+      const res = await fetch(getApiUrl('/api/sweep/robustness'));
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setRobustnessResult(data);

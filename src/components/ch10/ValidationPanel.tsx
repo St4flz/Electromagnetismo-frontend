@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '../../utils/apiConfig';
 
 export interface ValidationItem {
   caseId: string;
@@ -20,8 +21,12 @@ export const ValidationPanel: React.FC = () => {
     setIsLoading(true);
     setErrorMsg(null);
     try {
-      const res = await fetch('/api/fdtd/validate');
+      const res = await fetch(getApiUrl('/api/fdtd/validate'));
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const contentType = res.headers.get('content-type');
+      if (contentType && !contentType.includes('application/json')) {
+        throw new Error('Respuesta del servidor no es JSON (verifique proxy backend)');
+      }
       const data = await res.json();
 
       const items: ValidationItem[] = [

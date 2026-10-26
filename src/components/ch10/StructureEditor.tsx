@@ -203,7 +203,7 @@ export const StructureEditor: React.FC<StructureEditorProps> = ({
         {/* Periodo a */}
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', marginBottom: '2px' }}>
-            <span style={{ color: 'var(--text-secondary)' }}>Periodo (a):</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Periodo transversal (a):</span>
             <strong style={{ color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)' }}>{geometry.a_mm.toFixed(1)} mm</strong>
           </div>
           <input
@@ -212,49 +212,67 @@ export const StructureEditor: React.FC<StructureEditorProps> = ({
             max={20.0}
             step={0.5}
             value={geometry.a_mm}
-            onChange={(e) => onChange({ ...geometry, a_mm: parseFloat(e.target.value) })}
+            onChange={(e) => {
+              const newA = parseFloat(e.target.value);
+              const newW = Math.min(geometry.w_mm, newA);
+              const newD = Math.min(geometry.d_mm, newA);
+              onChange({ ...geometry, a_mm: newA, w_mm: newW, d_mm: newD });
+            }}
             disabled={isSimulating}
             style={{ width: '100%' }}
           />
         </div>
 
-        {/* Lado d */}
+        {/* Separación / Lado d */}
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', marginBottom: '2px' }}>
-            <span style={{ color: 'var(--text-secondary)' }}>Dimensión exterior (d):</span>
+            <span style={{ color: 'var(--text-secondary)' }}>
+              {geometry.family === 'square_ring' ? 'Margen exterior (d):' : 'Separación longitudinal (d):'}
+            </span>
             <strong style={{ color: 'var(--accent-gold)', fontFamily: 'var(--font-mono)' }}>{geometry.d_mm.toFixed(1)} mm</strong>
           </div>
           <input
             type="range"
-            min={1.0}
+            min={0.0}
             max={Math.min(geometry.a_mm, 18.0)}
             step={0.25}
             value={geometry.d_mm}
-            onChange={(e) => onChange({ ...geometry, d_mm: parseFloat(e.target.value) })}
+            onChange={(e) => {
+              const newD = parseFloat(e.target.value);
+              let newW = geometry.w_mm;
+              if (geometry.family === 'square_ring' && (geometry.a_mm - newD) <= 2 * newW) {
+                newW = Math.max(0.25, (geometry.a_mm - newD - 0.5) / 2.0);
+              }
+              onChange({ ...geometry, d_mm: newD, w_mm: newW });
+            }}
             disabled={isSimulating}
             style={{ width: '100%' }}
           />
         </div>
 
-        {/* Grosor de traza w */}
-        {geometry.family === 'square_ring' && (
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', marginBottom: '2px' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Grosor traza (w):</span>
-              <strong style={{ color: 'var(--accent-emerald)', fontFamily: 'var(--font-mono)' }}>{geometry.w_mm.toFixed(2)} mm</strong>
-            </div>
-            <input
-              type="range"
-              min={0.25}
-              max={Math.max(0.5, geometry.d_mm / 2.0 - 0.25)}
-              step={0.25}
-              value={geometry.w_mm}
-              onChange={(e) => onChange({ ...geometry, w_mm: parseFloat(e.target.value) })}
-              disabled={isSimulating}
-              style={{ width: '100%' }}
-            />
+        {/* Grosor de elemento w (aplica a ambas familias) */}
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', marginBottom: '2px' }}>
+            <span style={{ color: 'var(--text-secondary)' }}>
+              {geometry.family === 'square_ring' ? 'Grosor traza (w):' : 'Lado varilla / Espesor (w):'}
+            </span>
+            <strong style={{ color: 'var(--accent-emerald)', fontFamily: 'var(--font-mono)' }}>{geometry.w_mm.toFixed(2)} mm</strong>
           </div>
-        )}
+          <input
+            type="range"
+            min={geometry.family === 'square_ring' ? 0.25 : 0.0}
+            max={
+              geometry.family === 'square_ring'
+                ? Math.max(0.25, (geometry.a_mm - geometry.d_mm) / 2.0 - 0.25)
+                : geometry.a_mm
+            }
+            step={0.25}
+            value={geometry.w_mm}
+            onChange={(e) => onChange({ ...geometry, w_mm: parseFloat(e.target.value) })}
+            disabled={isSimulating}
+            style={{ width: '100%' }}
+          />
+        </div>
 
         {/* Repeticiones longitudinales */}
         <div>

@@ -7,6 +7,7 @@ import { SpectrumChart, SpectrumDataPoint } from '../../components/ch10/Spectrum
 import { ValidationPanel } from '../../components/ch10/ValidationPanel';
 import { CodeEquationPanel } from '../../components/ch10/CodeEquationPanel';
 import { PerformanceHUD } from '../../components/ch10/PerformanceHUD';
+import { getApiUrl, getWsUrl } from '../../utils/apiConfig';
 
 export const Chapter10_FDTDSimulator: React.FC = () => {
   // Parámetros de la celda unitaria
@@ -53,102 +54,126 @@ export const Chapter10_FDTDSimulator: React.FC = () => {
   const lastFrameTimeRef = useRef<number>(performance.now());
   const frameCountRef = useRef<number>(0);
 
+  // Referencias para dimensiones sin recrear el socket
+  const fieldDimsRef = useRef({ rows: 0, cols: 0 });
+
   // Conectar WebSocket /ws/fdtd
   useEffect(() => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws/fdtd`;
-    const ws = new WebSocket(wsUrl);
-    ws.binaryType = 'arraybuffer';
-    socketRef.current = ws;
+    let isSubscribed = true;
+    let reconnectTimer: number | null = null;
 
-    ws.onopen = () => {
-      setWsConnected(true);
-    };
+    const connect = () => {
+      if (!isSubscribed) return;
+      const wsUrl = getWsUrl('/ws/fdtd');
+      const ws = new WebSocket(wsUrl);
+      ws.binaryType = 'arraybuffer';
+      socketRef.current = ws;
 
-    ws.onclose = () => {
-      setWsConnected(false);
-      setIsSimulating(false);
-    };
+      ws.onopen = () => {
+        if (!isSubscribed) return;
+        setWsConnected(true);
+      };
 
-    ws.onmessage = (event) => {
-      if (typeof event.data === 'string') {
-        try {
-          const msg = JSON.parse(event.data);
-          if (msg.type === 'simulation_started' && msg.grid) {
-            setGridMeta(msg.grid);
-            setFieldRows(msg.grid.Nx);
-            setFieldCols(msg.grid.Ny);
-          } else if (msg.type === 'stream_frame') {
-            setCurrentStep(msg.step || 0);
-            if (msg.max_steps) setMaxSteps(msg.max_steps);
-            if (msg.time_ns !== undefined) setTimeNs(msg.time_ns);
-            if (msg.energy_ratio !== undefined) setEnergyRatio(msg.energy_ratio);
-            if (msg.computeTimeMs !== undefined) setComputeTimeMs(msg.computeTimeMs);
+      ws.onclose = () => {
+        if (!isSubscribed) return;
+        setWsConnected(false);
+        setIsSimulating(false);
+        reconnectTimer = window.setTimeout(connect, 2000);
+      };
 
-            // Medir FPS y Throughput Mceldas/s
-            const now = performance.now();
-            frameCountRef.current += 1;
-            const dtSec = (now - lastFrameTimeRef.current) / 1000.0;
-            if (dtSec >= 0.5) {
-              const currentFps = frameCountRef.current / dtSec;
-              setFps(currentFps);
-              if (fieldRows > 0 && fieldCols > 0) {
-                const totalCellsPerFrame = fieldRows * fieldCols * 6; // 6 pasos por frame
-                const mcells = (totalCellsPerFrame * currentFps) / 1e6;
-                setMcellsPerSec(mcells);
+      ws.onerror = () => {
+        if (!isSubscribed) return;
+        setWsConnected(false);
+      };
+
+      ws.onmessage = (event) => {
+        if (!isSubscribed) return;
+        if (typeof event.data === 'string') {
+          try {
+            const msg = JSON.parse(event.data);
+            if (msg.type === 'simulation_started' && msg.grid) {
+              setGridMeta(msg.grid);
+              fieldDimsRef.current = { rows: msg.grid.Nx, cols: msg.grid.Ny };
+              setFieldRows(msg.grid.Nx);
+              setFieldCols(msg.grid.Ny);
+            } else if (msg.type === 'stream_frame') {
+              setCurrentStep(msg.step || 0);
+              if (msg.max_steps) setMaxSteps(msg.max_steps);
+              if (msg.time_ns !== undefined) setTimeNs(msg.time_ns);
+              if (msg.energy_ratio !== undefined) setEnergyRatio(msg.energy_ratio);
+              if (msg.computeTimeMs !== undefined) setComputeTimeMs(msg.computeTimeMs);
+
+              // Medir FPS y Throughput Mceldas/s
+              const now = performance.now();
+              frameCountRef.current += 1;
+              const dtSec = (now - lastFrameTimeRef.current) / 1000.0;
+              if (dtSec >= 0.5) {
+                const currentFps = frameCountRef.current / dtSec;
+                setFps(currentFps);
+                const { rows, cols } = fieldDimsRef.current;
+                if (rows > 0 && cols > 0) {
+                  const totalCellsPerFrame = rows * cols * 6; // 6 pasos por frame
+                  const mcells = (totalCellsPerFrame * currentFps) / 1e6;
+                  setMcellsPerSec(mcells);
+                }
+                frameCountRef.current = 0;
+                lastFrameTimeRef.current = now;
               }
-              frameCountRef.current = 0;
-              lastFrameTimeRef.current = now;
+            } else if (msg.type === 'spectrum_ready' && msg.spectrum) {
+              const s = msg.spectrum;
+              const points: SpectrumDataPoint[] = s.frequencies_ghz.map((f: number, idx: number) => {
+                const t = s.transmission[idx] ?? 0;
+                const r = s.reflection[idx] ?? 0;
+                const a = s.absorption[idx] ?? 0;
+                return {
+                  frequencyGhz: f,
+                  transmission: t,
+                  reflection: r,
+                  absorption: a,
+                  totalEnergy: t + r,
+                  transmissionDb: s.transmission_db?.[idx] ?? (t > 0 ? 10 * Math.log10(t) : -50),
+                };
+              });
+              setSpectrumData(points);
+            } else if (msg.type === 'stream_end') {
+              setIsSimulating(false);
             }
-          } else if (msg.type === 'spectrum_ready' && msg.spectrum) {
-            const s = msg.spectrum;
-            const points: SpectrumDataPoint[] = s.frequencies_ghz.map((f: number, idx: number) => {
-              const t = s.transmission[idx] ?? 0;
-              const r = s.reflection[idx] ?? 0;
-              const a = s.absorption[idx] ?? 0;
-              return {
-                frequencyGhz: f,
-                transmission: t,
-                reflection: r,
-                absorption: a,
-                totalEnergy: t + r,
-                transmissionDb: s.transmission_db?.[idx] ?? (t > 0 ? 10 * Math.log10(t) : -50),
-              };
-            });
-            setSpectrumData(points);
-          } else if (msg.type === 'stream_end') {
-            setIsSimulating(false);
+          } catch (e) {
+            console.error('Error parseando mensaje WS texto:', e);
           }
-        } catch (e) {
-          console.error('Error parseando mensaje WS texto:', e);
+        } else if (event.data instanceof ArrayBuffer) {
+          // Desempaquetar frame binario: Header struct <IfHH (12 bytes)
+          const dv = new DataView(event.data);
+          const step = dv.getUint32(0, true);
+          const scale = dv.getFloat32(4, true);
+          const rows = dv.getUint16(8, true);
+          const cols = dv.getUint16(10, true);
+
+          const payloadU8 = new Uint8Array(event.data, 12);
+          const count = rows * cols;
+          const decoded = new Float32Array(count);
+
+          for (let i = 0; i < count; i++) {
+            decoded[i] = ((payloadU8[i] - 128) / 127.0) * scale;
+          }
+
+          fieldDimsRef.current = { rows, cols };
+          setFieldScale(scale);
+          setFieldRows(rows);
+          setFieldCols(cols);
+          setFieldBuffer(decoded);
         }
-      } else if (event.data instanceof ArrayBuffer) {
-        // Desempaquetar frame binario: Header struct <IfHH (12 bytes)
-        const dv = new DataView(event.data);
-        const step = dv.getUint32(0, true);
-        const scale = dv.getFloat32(4, true);
-        const rows = dv.getUint16(8, true);
-        const cols = dv.getUint16(10, true);
-
-        const payloadU8 = new Uint8Array(event.data, 12);
-        const count = rows * cols;
-        const decoded = new Float32Array(count);
-
-        for (let i = 0; i < count; i++) {
-          decoded[i] = ((payloadU8[i] - 128) / 127.0) * scale;
-        }
-
-        setFieldScale(scale);
-        setFieldRows(rows);
-        setFieldCols(cols);
-        setFieldBuffer(decoded);
-      }
+      };
     };
+
+    connect();
 
     return () => {
-      ws.close();
+      isSubscribed = false;
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+      if (socketRef.current) socketRef.current.close();
     };
-  }, [fieldRows, fieldCols]);
+  }, []);
 
   // Iniciar corrida FDTD
   const startSimulation = useCallback(() => {
@@ -198,7 +223,7 @@ export const Chapter10_FDTDSimulator: React.FC = () => {
   const computeSpectrumRest = async () => {
     setIsSimulating(true);
     try {
-      const res = await fetch('/api/fdtd/spectrum', {
+      const res = await fetch(getApiUrl('/api/fdtd/spectrum'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

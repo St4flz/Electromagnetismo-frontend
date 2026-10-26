@@ -20,6 +20,7 @@ import {
   RevalidationData,
 } from '../../components/ch12/RevalidationModal';
 import { SpectrumComparisonChart } from '../../components/ch12/SpectrumComparisonChart';
+import { getApiUrl, getWsUrl } from '../../utils/apiConfig';
 
 export const Chapter12_GeneticOptimizer: React.FC = () => {
   // Configuración del Algoritmo Genético
@@ -101,8 +102,7 @@ export const Chapter12_GeneticOptimizer: React.FC = () => {
     setInitialSpectrum(null);
     setOptimizedSpectrum(null);
 
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws/optimizer`;
+    const wsUrl = getWsUrl('/ws/optimizer');
     const ws = new WebSocket(wsUrl);
     socketRef.current = ws;
 
@@ -155,7 +155,7 @@ export const Chapter12_GeneticOptimizer: React.FC = () => {
           // Actualizar espectros
           if (d.generation === 1) {
             // Guardar primer espectro de referencia
-            fetch(`/api/fdtd/spectrum?a_mm=${d.best_individual[0]}&d_mm=${d.best_individual[1]}&w_mm=${d.best_individual[2]}&periods=${config.periods}&family=${config.family}&dx_mm=${config.dx_mm}&f0_ghz=${config.f0_ghz}`)
+            fetch(getApiUrl(`/api/fdtd/spectrum?a_mm=${d.best_individual[0]}&d_mm=${d.best_individual[1]}&w_mm=${d.best_individual[2]}&periods=${config.periods}&family=${config.family}&dx_mm=${config.dx_mm}&f0_ghz=${config.f0_ghz}`))
               .then((res) => res.json())
               .then((spec) => {
                 if (spec.frequencies_ghz) {
@@ -171,7 +171,7 @@ export const Chapter12_GeneticOptimizer: React.FC = () => {
 
           // Traer espectro completo del mejor diseño ganador
           if (msg.data && bestDesign) {
-            fetch(`/api/fdtd/spectrum?a_mm=${bestDesign.a_mm}&d_mm=${bestDesign.d_mm}&w_mm=${bestDesign.w_mm}&periods=${config.periods}&family=${config.family}&dx_mm=${config.dx_mm}&f0_ghz=${config.f0_ghz}`)
+            fetch(getApiUrl(`/api/fdtd/spectrum?a_mm=${bestDesign.a_mm}&d_mm=${bestDesign.d_mm}&w_mm=${bestDesign.w_mm}&periods=${config.periods}&family=${config.family}&dx_mm=${config.dx_mm}&f0_ghz=${config.f0_ghz}`))
               .then((res) => res.json())
               .then((spec) => {
                 if (spec.frequencies_ghz) {
@@ -227,7 +227,7 @@ export const Chapter12_GeneticOptimizer: React.FC = () => {
   const handleRunGridSearch = async () => {
     setIsGridSearching(true);
     try {
-      const res = await fetch('/api/optimizer/grid-search', {
+      const res = await fetch(getApiUrl('/api/optimizer/grid-search'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -271,7 +271,7 @@ export const Chapter12_GeneticOptimizer: React.FC = () => {
     if (!bestDesign) return;
     setIsRevalidating(true);
     try {
-      const res = await fetch('/api/optimizer/revalidate', {
+      const res = await fetch(getApiUrl('/api/optimizer/revalidate'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
