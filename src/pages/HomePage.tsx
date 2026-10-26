@@ -187,6 +187,19 @@ export const HomePage: React.FC = () => {
               </p>
               <div style={{ marginTop: 'auto', paddingTop: '16px', fontSize: '0.76rem', color: 'var(--accent-emerald)' }}>Explorar simulador troncal &rarr;</div>
             </Link>
+
+            {/* Ch 11 */}
+            <Link to="/chapter/11-parametric-lab" className="lab-card" style={{ textDecoration: 'none', color: 'inherit', padding: '20px', display: 'flex', flexDirection: 'column', border: '1px solid rgba(6, 182, 212, 0.4)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>11</span>
+                <span className="badge" style={{ fontSize: '0.65rem', background: 'rgba(6, 182, 212, 0.15)', color: '#06b6d4', borderColor: 'rgba(6, 182, 212, 0.3)' }}>Laboratorio</span>
+              </div>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 600, marginTop: '6px', color: 'var(--text-primary)' }}>Laboratorio Paramétrico y Función F₂</h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginTop: '8px' }}>
+                Barridos 1D y 2D sobre (a, d, w), familias de curvas T(f), mapas de calor, dataset README y selectividad F₂.
+              </p>
+              <div style={{ marginTop: 'auto', paddingTop: '16px', fontSize: '0.76rem', color: 'var(--accent-cyan)' }}>Explorar laboratorio paramétrico &rarr;</div>
+            </Link>
           </div>
         </section>
       </main>

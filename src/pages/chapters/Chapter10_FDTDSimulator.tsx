@@ -252,6 +252,7 @@ export const Chapter10_FDTDSimulator: React.FC = () => {
       chapterNumber={10}
       chapterTitle="Simulador FDTD v2: Celda Unitaria y Rigor Físico"
       prevPath="/chapter/9-fdtd-intro"
+      nextPath="/chapter/11-parametric-lab"
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {/* Banner de Suposiciones Físicas */}

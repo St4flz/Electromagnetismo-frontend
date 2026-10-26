@@ -80,6 +80,13 @@ const CHAPTERS: ChapterItem[] = [
     path: '/chapter/10-fdtd-simulator',
     description: 'Yee 2D TM con rigor, Floquet en y, CPML, TF/SF y espectro Poynting.',
   },
+  {
+    id: 'ch11',
+    number: '11',
+    title: 'Laboratorio Paramétrico FDTD',
+    path: '/chapter/11-parametric-lab',
+    description: 'Barridos 1D/2D, mapas de calor T(f, a), selectividad F2 y tabla README.',
+  },
 ];
 
 export const Sidebar: React.FC = () => {
