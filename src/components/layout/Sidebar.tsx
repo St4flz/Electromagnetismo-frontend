@@ -62,9 +62,9 @@ const CHAPTERS: ChapterItem[] = [
   {
     id: 'ch8',
     number: '08',
-    title: 'Introducción a Metamateriales',
+    title: 'Medio Efectivo Fenomenológico',
     path: '/chapter/8-metamaterials',
-    description: 'Estructuras periódicas (a, d, w), medios DNG y refracción negativa.',
+    description: 'Modelo de medio efectivo fenomenológico: celda (a, d, w), parámetros Veselago y TMM.',
   },
   {
     id: 'ch9',
@@ -72,6 +72,13 @@ const CHAPTERS: ChapterItem[] = [
     title: 'Introducción al Método FDTD',
     path: '/chapter/9-fdtd-intro',
     description: 'Celda de Yee 2D TM, estabilidad CFL, fronteras Mur ABC y espectro FFT.',
+  },
+  {
+    id: 'ch10',
+    number: '10',
+    title: 'Simulador FDTD v2: Celda Unitaria',
+    path: '/chapter/10-fdtd-simulator',
+    description: 'Yee 2D TM con rigor, Floquet en y, CPML, TF/SF y espectro Poynting.',
   },
 ];
 

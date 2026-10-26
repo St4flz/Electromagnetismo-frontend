@@ -200,7 +200,7 @@ export const Chapter8_Metamaterials: React.FC = () => {
   return (
     <ChapterLayout
       chapterNumber={8}
-      chapterTitle="Introducción a Metamateriales: Estructuras Periódicas y Refracción Negativa"
+      chapterTitle="Metamateriales: Modelo de Medio Efectivo Fenomenológico"
       prevPath="/chapter/7-em-wave-vacuum"
       nextPath="/chapter/9-fdtd-intro"
     >

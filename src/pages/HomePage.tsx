@@ -155,9 +155,9 @@ export const HomePage: React.FC = () => {
                 <span style={{ fontSize: '0.72rem', color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>08</span>
                 <span className="badge" style={{ fontSize: '0.65rem' }}>Nuevo</span>
               </div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 600, marginTop: '6px', color: 'var(--text-primary)' }}>Introducción a Metamateriales</h3>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 600, marginTop: '6px', color: 'var(--text-primary)' }}>Medio Efectivo Fenomenológico</h3>
               <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginTop: '8px' }}>
-                Estructuras periódicas (a, d, w), modelos Drude-Lorentz, medios zurdos DNG y refracción negativa.
+                Modelo fenomenológico de medio efectivo: estructuras periódicas (a, d, w), modelos Drude-Lorentz, medios zurdos DNG y refracción negativa.
               </p>
               <div style={{ marginTop: 'auto', paddingTop: '16px', fontSize: '0.76rem', color: 'var(--accent-cyan)' }}>Explorar capítulo &rarr;</div>
             </Link>
@@ -173,6 +173,19 @@ export const HomePage: React.FC = () => {
                 Malla escalonada de Yee 2D TM, criterio de estabilidad CFL, fronteras Mur ABC y espectro FFT.
               </p>
               <div style={{ marginTop: 'auto', paddingTop: '16px', fontSize: '0.76rem', color: 'var(--accent-cyan)' }}>Explorar capítulo &rarr;</div>
+            </Link>
+
+            {/* Ch 10 */}
+            <Link to="/chapter/10-fdtd-simulator" className="lab-card" style={{ textDecoration: 'none', color: 'inherit', padding: '20px', display: 'flex', flexDirection: 'column', border: '1px solid rgba(16, 185, 129, 0.4)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--accent-emerald)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>10</span>
+                <span className="badge" style={{ fontSize: '0.65rem', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', borderColor: 'rgba(16, 185, 129, 0.3)' }}>Eje Troncal</span>
+              </div>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 600, marginTop: '6px', color: 'var(--text-primary)' }}>Simulador FDTD v2: Rigor y Celda</h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginTop: '8px' }}>
+                Malla Yee 2D TM, Floquet periódico en y, capas CPML (-120 dB), inyección TF/SF pura, espectro Poynting y batería V1–V11.
+              </p>
+              <div style={{ marginTop: 'auto', paddingTop: '16px', fontSize: '0.76rem', color: 'var(--accent-emerald)' }}>Explorar simulador troncal &rarr;</div>
             </Link>
           </div>
         </section>

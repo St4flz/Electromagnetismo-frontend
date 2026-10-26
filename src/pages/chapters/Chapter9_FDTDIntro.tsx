@@ -199,7 +199,7 @@ export const Chapter9_FDTDIntro: React.FC = () => {
       chapterNumber={9}
       chapterTitle="Introducción al Método FDTD 2D: Celda de Yee y Estabilidad CFL"
       prevPath="/chapter/8-metamaterials"
-      nextPath="/"
+      nextPath="/chapter/10-fdtd-simulator"
     >
       <ChapterAssumptions
         systemRange="Rejilla escalonada de Yee 2D de 80×50 celdas (Δx = Δy = 2.0 mm, polarización TM: Ez, Hx, Hy)"
